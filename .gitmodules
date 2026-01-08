@@ -1,0 +1,6 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/AVL-Code/SIIBS_Front
+[submodule "backend"]
+	path = backend
+	url = https://github.com/AVL-Code/SIIBS_Back
