@@ -1,0 +1,22 @@
+# SIIBS Root Repository Code Ownership (RNF-01, RNF-07, 11-tech-spec.md §6)
+# Default owners for everything in the root repository
+* @brunoabreuco @DMBMz @gpombotky
+
+# Spec-Driven Development (SDD) Architecture, Domain & Security Specifications
+/docs/sdd/ @brunoabreuco @DMBMz @gpombotky
+/docs/sdd/SECURITY.md @brunoabreuco @DMBMz @gpombotky
+/docs/sdd/AUDIT.md @brunoabreuco @DMBMz @gpombotky
+/docs/sdd/DECISIONS.md @brunoabreuco @DMBMz @gpombotky
+
+# Product & Engineering Backlog and Operational Runbooks
+/docs/backlog/ @brunoabreuco @DMBMz @gpombotky
+/docs/operations/ @brunoabreuco @DMBMz @gpombotky
+
+# Repository Governance & Hooks
+/.github/ @brunoabreuco @DMBMz @gpombotky
+/.husky/ @brunoabreuco @DMBMz @gpombotky
+
+# Submodule Pointers
+/backend @brunoabreuco @DMBMz @gpombotky
+/frontend @brunoabreuco @DMBMz @gpombotky
+
