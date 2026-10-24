@@ -1,8 +1,8 @@
----
+﻿---
 id: task-02
 github_issue: 2
 title: '[Chore] Configure GitHub branch protection rules and repository security settings'
-status: in_progress
+status: done
 assignee: ''
 milestone: stage-1-foundations
 labels:
