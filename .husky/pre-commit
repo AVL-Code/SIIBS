@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+if [ -f "tsconfig.json" ]; then
+  npm run lint && npm run typecheck
+else
+  npx lint-staged
+fi
+

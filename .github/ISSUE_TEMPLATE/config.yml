@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: SDD Technical Specification
+    url: https://github.com/AVL-Code/SIIBS/blob/main/docs/sdd/11-tech-spec.md
+    about: Review the Spec-Driven Development architecture and conventions before opening an issue.

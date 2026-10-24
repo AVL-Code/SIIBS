@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+HOOK_DIR="$(CDPATH="" cd -- "$(dirname -- "$0")" && pwd)"
+ROOT_DIR="$(CDPATH="" cd -- "$HOOK_DIR/.." && pwd)"
+MSG_FILE="$1"
+
+case "$MSG_FILE" in
+  /*|[A-Za-z]:*) ;;
+  *) MSG_FILE="$(pwd)/$MSG_FILE" ;;
+esac
+
+npx --prefix "$ROOT_DIR" --no -- commitlint --config "$ROOT_DIR/commitlint.config.mjs" --edit "$MSG_FILE"
+
