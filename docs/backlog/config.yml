@@ -1,0 +1,28 @@
+project:
+  name: "SIIBS - Social Assistance & Education Management Platform"
+  repository: "AVL-Code/SIIBS"
+  github_project_number: 2
+  github_project_url: "https://github.com/orgs/AVL-Code/projects/2"
+  spec_dir: "docs/sdd"
+  language: "en-US"
+
+statuses:
+  - todo
+  - in_progress
+  - blocked
+  - done
+
+milestones:
+  - id: stage-1-foundations
+    title: "Stage 1 - Foundations"
+    github_milestone: 1
+  - id: stage-2-registry-core
+    title: "Stage 2 - Registry Core"
+    github_milestone: 2
+  - id: stage-3-assistance-mvp
+    title: "Stage 3 - Assistance MVP"
+    github_milestone: 3
+  - id: stage-4-quality-operations
+    title: "Stage 4 - Quality & Operations"
+    github_milestone: 4
+
