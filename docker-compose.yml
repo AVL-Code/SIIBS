@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: siibs-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-siibs}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-siibs_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-siibs_dev}
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - siibs_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER:-siibs} -d $${POSTGRES_DB:-siibs_dev}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: siibs-postgres-test
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_TEST_USER:-siibs_test}
+      POSTGRES_PASSWORD: ${POSTGRES_TEST_PASSWORD:-siibs_test_password}
+      POSTGRES_DB: ${POSTGRES_TEST_DB:-siibs_test}
+    ports:
+      - '${POSTGRES_TEST_PORT:-5433}:5432'
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U $${POSTGRES_TEST_USER:-siibs_test} -d $${POSTGRES_TEST_DB:-siibs_test}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  siibs_postgres_data:

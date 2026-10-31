@@ -2,7 +2,7 @@
 id: task-03
 github_issue: 3
 title: '[Chore] Set up CI/CD pipeline with GitHub Actions'
-status: in_progress
+status: done
 assignee: ''
 milestone: stage-1-foundations
 labels:
