@@ -2,7 +2,7 @@
 id: task-04
 github_issue: 4
 title: '[Chore] Set up local PostgreSQL 16 environment, multi-schema configuration, and Zod env validation'
-status: in_progress
+status: done
 assignee: ''
 milestone: stage-1-foundations
 labels:
