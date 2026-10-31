@@ -20,18 +20,20 @@ Compartilhar cadastro não significa compartilhar todos os dados. Atendimentos, 
 
 O controle de acesso é aplicado obrigatoriamente no backend via `PermissionGuard` (`RF-14`, `RNF-01`, `RNF-02`), utilizando 3 perfis internos com suporte a múltiplos perfis por usuário (`iam.user_roles`):
 
-1. **`SYSTEM_ADMIN`:** acesso administrativo completo (`iam:user:manage`, `audit:event:read`, `registry:*`, `assistance:*`).
-2. **`SOCIAL_OPERATOR`:** acesso completo ao núcleo compartilhado `registry` (`registry:person:read/write`, `registry:document:read/write`), ao módulo `assistance` (`assistance:household:read/write`, `assistance:attendance:read/write`, `assistance:income:read/write`, `assistance:benefit:read/write`, `assistance:report:read`) e à consulta da trilha de auditoria (`audit:event:read`), sem permissão para gerenciar contas (`iam:user:manage`).
-3. **`EDUCATION_OPERATOR` (fronteira reservada para expansão futura):** acesso completo ao núcleo compartilhado `registry` (`registry:person:read/write`, `registry:document:read/write`), consulta da trilha de auditoria (`audit:event:read`, restrita aos módulos autorizados) e futuras permissões `education:*`, sem qualquer permissão `assistance:*` ou `iam:user:manage`.
+1. **`SYSTEM_ADMIN`:** acesso administrativo completo (`iam:user:manage`, `audit:event:read` irrestrito em todos os módulos, `registry:*`, `assistance:*`).
+2. **`SOCIAL_OPERATOR`:** acesso completo ao núcleo compartilhado `registry` (`registry:person:read/write`, `registry:document:read/write` para documentos gerais), ao módulo `assistance` (`assistance:household:read/write`, `assistance:attendance:read/write`, `assistance:income:read/write`, `assistance:benefit:read/write`, `assistance:report:read` e documentos específicos do Social) e à consulta da trilha de auditoria (`audit:event:read`, restrita aos módulos autorizados: `registry` e `assistance`), sem permissão para gerenciar contas (`iam:user:manage`) nem acesso aos módulos `iam` ou `education`.
+3. **`EDUCATION_OPERATOR` (fronteira reservada para expansão futura):** acesso completo ao núcleo compartilhado `registry` (`registry:person:read/write`, `registry:document:read/write` para documentos gerais), consulta da trilha de auditoria (`audit:event:read`, restrita aos módulos autorizados: `registry` e `education`) e futuras permissões `education:*` (incluindo documentos específicos de Cursos), sem qualquer permissão `assistance:*` ou `iam:user:manage`.
 
-### Regras de Visibilidade e Isolamento (`RNF-02`, `DA-007`)
+### Regras de Visibilidade e Isolamento (`RNF-02`, `DA-004`, `DA-007`)
 
-- Perfis sem permissões `assistance:*` (como `EDUCATION_OPERATOR`) são bloqueados pelo `PermissionGuard` em qualquer operação do módulo `assistance` e nunca recebem dados socioeconômicos, rendas, benefícios, composição familiar ou histórico de atendimentos em DTOs de `registry` ou `audit`.
-- Em buscas de `Person` (`RF-06`), informações sobre vínculo ativo com `Household` só são expostas quando o requisitante possui `assistance:household:read`.
+- **Isolamento do módulo `assistance`:** Perfis sem permissões `assistance:*` (como `EDUCATION_OPERATOR`) são bloqueados pelo `PermissionGuard` em qualquer operação do módulo `assistance` e nunca recebem dados socioeconômicos, rendas, benefícios, composição familiar ou histórico de atendimentos em DTOs de `registry` ou `audit`.
+- **Documentos Gerais vs. Documentos Específicos de Módulo:** Documentos gerais da pessoa (`registry.person_documents`, como RG, CPF e comprovante de endereço — `DA-004`) pertencem ao `registry` (`registry:document:*`) e são compartilhados entre os 3 perfis. Já documentos específicos da Assistência Social pertencem ao módulo `assistance` (visíveis apenas com permissão `assistance:*`), e documentos específicos de Cursos pertencerão ao módulo `education` (`education:*`), sem compartilhamento cruzado automático (`DA-007`).
+- **Trilha de Auditoria por Escopo (`audit:event:read`):** `SOCIAL_OPERATOR` consulta apenas eventos de `registry` e `assistance`; `EDUCATION_OPERATOR` consulta apenas eventos de `registry` e `education`; `SYSTEM_ADMIN` consulta eventos de todos os módulos.
+- **Detecção de Vínculo Familiar (`RF-06`):** Em buscas de `Person`, informações sobre vínculo ativo com `Household` só são expostas quando o requisitante possui `assistance:household:read`.
 
 ## Documentos
 
-- Definir tipos, campos, validade e acesso.
+- Definir tipos, campos, validade e acesso (separando documentos gerais do `registry` de documentos específicos de `assistance` e `education`).
 - Armazenar arquivos em local protegido, sem caminhos públicos.
 - Aplicar controles de acesso e avaliar criptografia para arquivos/backups conforme risco.
 - Registrar consulta/alteração quando relevante.
