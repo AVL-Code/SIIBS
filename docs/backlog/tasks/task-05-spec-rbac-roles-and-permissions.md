@@ -2,7 +2,7 @@
 id: task-05
 github_issue: 5
 title: '[Spec] Define initial RBAC roles, permissions matrix, and security policies'
-status: in_progress
+status: done
 assignee: ''
 milestone: stage-1-foundations
 labels:
