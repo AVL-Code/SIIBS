@@ -59,3 +59,8 @@ The Orchestrator selects the model tier for each subagent/step to maximize token
 - **`flash_lite`:** Quick file lookups, status checks, simple grep/formatting validations, boilerplate scaffolding.
 - **`flash`:** Standard CRUD implementation, routine React components/forms, unit tests, and straightforward documentation updates where the contract is already locked.
 - **`pro` (or `inherit` when running on top-tier model):** Complex domain logic, SDD architecture definitions, RBAC/privacy boundaries, `AES-256-GCM` encryption & `HMAC-SHA256` blind indexing, atomic PostgreSQL transactions with `AuditEvent`, and cross-module debugging.
+
+#### Strict Orchestrator Non-Execution Rule & PR Merge Ownership
+- **Orchestrator Non-Execution:** The **Orchestrator Agent** ONLY decides, evaluates, coordinates, and validates. It MUST NOT execute basic operational tasks directly (such as editing multiple files, running git commits/pushes, creating PRs, polling CI checks, or running commands) unless explicitly requested by the user.
+- **Mandatory Operational Delegation:** All git operations (`branch`, `commit`, `push`, opening PRs, polling CI) and basic file edits MUST be delegated to a lower-cost subagent (`flash_lite` or `flash`).
+- **No Automatic PR Merges:** Neither the Orchestrator nor any subagent may merge Pull Requests automatically. Once the **QA & Security Agent** validates that a PR passes all tests and CI checks, the Orchestrator reports to the **User** that the PR is ready so the **User** performs the merge.
