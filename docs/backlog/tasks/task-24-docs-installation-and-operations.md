@@ -23,9 +23,9 @@ dependencies:
 Produce the operational runbook and installation guide for running the SIIBS Modular Monolith in the institution's local environment, covering hardware/OS hardening, deployment, routine backups to off-device storage, restoration steps, and incident/equipment-loss response.
 
 ## Acceptance Criteria
-- [ ] Write `docs/operations/installation-and-setup.md` covering local hardware requirements (`RNF-05`), Node.js 22 + PostgreSQL 16 setup, `.env` configuration, database migrations, and initial admin seeding.
-- [ ] Write `docs/operations/backup-and-restore-runbook.md` detailing backup schedule, off-device storage separation, retention policy, and step-by-step disaster recovery restoration (`RNF-06`, `RNF-10`).
-- [ ] Write `docs/operations/security-and-incident-response.md` covering physical access controls, OS/dependency updates, network port restrictions, LGPD data handling guidelines, and action plan in case of equipment theft/failure (`SECURITY.md`).
+- [ ] Write `docs/operations/installation-and-setup.md` covering local hardware requirements (`RNF-05`), OS disk/volume encryption setup (LUKS/BitLocker — `DA-013`), Node.js 22 + PostgreSQL 16 setup, `.env` and separated encryption keys configuration (`DATA_ENCRYPTION_KEY`, `BLIND_INDEX_KEY`, `BACKUP_ENCRYPTION_KEY`), database migrations, and initial admin seeding.
+- [ ] Write `docs/operations/backup-and-restore-runbook.md` detailing encrypted backup schedule, off-device storage separation, separate custody of `BACKUP_ENCRYPTION_KEY`, retention policy, and step-by-step disaster recovery restoration (`RNF-06`, `RNF-10`, `DA-013`).
+- [ ] Write `docs/operations/security-and-incident-response.md` covering physical access controls, OS/dependency updates, network port restrictions, key rotation/compromise procedures, LGPD data handling guidelines, and action plan in case of equipment theft/failure (`SECURITY.md`).
 
 ## Definition of Done
 - Complete operational documentation is reviewed and published in `docs/operations/` and linked from the root `README.md`.

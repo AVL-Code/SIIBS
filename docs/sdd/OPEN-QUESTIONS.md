@@ -2,7 +2,7 @@
 
 ## Pessoas e documentos
 
-- Quais campos básicos estarão em Pessoa?
+- Quais campos básicos adicionais (além de nome, data de nascimento, foto opcional e contatos) estarão em Pessoa?
 - CPF será obrigatório? Como lidar com pessoas sem CPF?
 - Quais documentos serão aceitos além de RG e comprovante de endereço?
 - Quais tipos de documento exigem número único, validade ou histórico?

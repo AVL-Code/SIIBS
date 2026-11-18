@@ -2,9 +2,9 @@
 
 ## Incluído
 1. Autenticação de usuários internos.
-2. Cadastro e consulta de pessoas com identificador interno estável.
+2. Cadastro e consulta de pessoas com identificador interno estável e foto de identificação opcional (`DA-015`).
 3. Dados básicos e documentos iniciais da pessoa.
-4. Busca e reaproveitamento de cadastro existente.
+4. Busca e reaproveitamento de cadastro existente (incluindo busca exata por documento via *blind index* `HMAC-SHA256` e identificação visual por foto).
 5. Entidade familiar, responsável e integrantes.
 6. Dados socioeconômicos e fontes de renda.
 7. Programas e benefícios.
@@ -13,7 +13,7 @@
 10. Relatórios/indicadores básicos.
 11. Autorização por perfil/permissão.
 12. Auditoria de alterações relevantes.
-13. Backup e restauração documentados.
+13. Criptografia em camadas (colunas sensíveis, arquivos e backups) e procedimento de backup/restauração documentado (`DA-013`).
 14. Persistência local e baixo custo operacional.
 
 ## Fora do MVP

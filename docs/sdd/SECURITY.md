@@ -31,13 +31,25 @@ O controle de acesso é aplicado obrigatoriamente no backend via `PermissionGuar
 - **Trilha de Auditoria por Escopo (`audit:event:read`):** `SOCIAL_OPERATOR` consulta apenas eventos de `registry` e `assistance`; `EDUCATION_OPERATOR` consulta apenas eventos de `registry` e `education`; `SYSTEM_ADMIN` consulta eventos de todos os módulos.
 - **Detecção de Vínculo Familiar (`RF-06`):** Em buscas de `Person`, informações sobre vínculo ativo com `Household` só são expostas quando o requisitante possui `assistance:household:read`.
 
-## Documentos
+## Documentos e Foto de Identificação (`DA-004`, `DA-015`)
 
 - Definir tipos, campos, validade e acesso (separando documentos gerais do `registry` de documentos específicos de `assistance` e `education`).
-- Armazenar arquivos em local protegido, sem caminhos públicos.
-- Aplicar controles de acesso e avaliar criptografia para arquivos/backups conforme risco.
+- Armazenar arquivos de documentos (`./storage/documents/`) e fotos de pessoas (`./storage/photos/`) em local protegido, sem caminhos públicos, servidos exclusivamente via rotas autenticadas e autorizadas no backend.
+- Criptografar arquivos digitais em repouso (`AES-256-GCM`) e validar MIME type, tamanho máximo e checksum `SHA-256`.
 - Registrar consulta/alteração quando relevante.
 - Evitar cópias duplicadas em cada módulo.
+
+## Criptografia em Camadas e Gestão de Chaves (`DA-013`)
+
+Para dificultar ao máximo o vazamento de informações sensíveis da instituição:
+1. **Criptografia de Disco/Volume (OS-level):** o volume onde residem o PostgreSQL e o diretório `./storage/` deve utilizar criptografia de disco (LUKS no Linux ou BitLocker no Windows) contra furto físico do equipamento.
+2. **Criptografia em Nível de Aplicação (`AES-256-GCM`) e Blind Indexing (`HMAC-SHA256`):**
+   - Colunas ultrassensíveis (CPF, números de documentos sensíveis em `registry`, notas/avaliações sociais em `assistance.attendances`) e arquivos em `./storage/` são criptografados pela aplicação com `AES-256-GCM` (IV único por registro + tag de autenticação) antes da gravação.
+   - Para preservar a capacidade de busca exata e verificação de unicidade (`RF-03`) sem expor CPF/documentos em texto claro no banco, o sistema gera um **blind index** determinístico (`HMAC-SHA256` com chave dedicada `BLIND_INDEX_KEY`) armazenado em coluna indexada própria (`*_blind_index`). O nome da pessoa permanece pesquisável para permitir busca parcial e fonética.
+3. **Criptografia de Backups (`AES-256`):** todo pacote gerado pela rotina de backup (dump do PostgreSQL + arquivos do `./storage/`) é obrigatoriamente criptografado antes de ser gravado no destino externo (`BACKUP_TARGET_DIR`).
+4. **Gestão e Segregação de Chaves:**
+   - `DATA_ENCRYPTION_KEY` (criptografia `AES-256-GCM` de colunas e arquivos) e `BLIND_INDEX_KEY` (`HMAC-SHA256`) são injetadas via variáveis de ambiente protegidas / cofre do sistema operacional no boot da aplicação e **nunca** são versionadas no Git nem salvas dentro dos pacotes de backup.
+   - `BACKUP_ENCRYPTION_KEY` é uma chave/senha separada utilizada exclusivamente para cifrar e decifrar os pacotes de backup, garantindo que o vazamento de uma mídia de backup externa não exponha os dados sem a chave de backup.
 
 ## Infraestrutura local
 

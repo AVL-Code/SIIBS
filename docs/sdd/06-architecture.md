@@ -14,15 +14,19 @@ Adotar inicialmente um **monólito modular** dividido em dois submódulos Git so
 
 Professor será cadastro específico de Cursos, não automaticamente parte do núcleo Pessoas. A relação com contas de usuário será decidida ao desenhar o módulo.
 
-## Banco de dados
-- Banco local conforme requisitos de infraestrutura.
-- Um registro canônico de Pessoa compartilhado entre módulos.
-- Documentos gerais vinculados à Pessoa.
+## Banco de dados e Criptografia (`DA-013`)
+- Banco local conforme requisitos de infraestrutura, sob disco/volume criptografado no sistema operacional (LUKS/BitLocker).
+- Um registro canônico de Pessoa compartilhado entre módulos, incluindo referência à foto de identificação opcional armazenada de forma protegida (`./storage/photos/`, `DA-015`).
+- Documentos gerais vinculados à Pessoa (`./storage/documents/`).
+- Criptografia em nível de aplicação (`AES-256-GCM`) para colunas ultrassensíveis (CPF, números de documentos sensíveis e avaliações/notas sociais de atendimentos) e arquivos em `./storage/`, combinada com *blind index* determinístico (`HMAC-SHA256`) para busca exata e unicidade de documentos sem expor texto claro no PostgreSQL.
 - Tabelas de domínio separadas para Social e, futuramente, Cursos.
 - Chaves estrangeiras e transações para manter integridade.
 - Não copiar campos compartilhados para tabelas específicas de cada módulo.
 - Evitar flags redundantes em Pessoa para estado de participação em cada módulo.
 - Aplicar autorização no backend e controles de banco quando viáveis.
+
+## Desenvolvimento Multiagêntico (`DA-014`)
+A arquitetura de monólito modular com fronteiras rígidas por Bounded Context (`iam`, `audit`, `registry`, `assistance`, `education`) e contratos explícitos (schemas Zod + `index.ts`) é projetada para suportar **desenvolvimento multiagêntico paralelo** do início ao fim do projeto (Social + Cursos). Agentes especializados por papel/camada (Spec/Architecture, Backend NestJS, Frontend React e QA/Security) operam isoladamente por Issue utilizando **Git Worktrees**, evitando conflitos de código e garantindo aderência ao SDD.
 
 ## Dados compartilhados
 Usuários autorizados dos dois módulos poderão corrigir dados gerais de Pessoa e documentos comuns. Alterações serão refletidas imediatamente nas consultas porque não há cópias independentes, e gerarão auditoria com usuário, data/hora, módulo de origem e campos alterados.

@@ -6,8 +6,8 @@ This backlog follows the **Backlog.md** convention and is synchronized 1:1 with 
 
 | # | Milestone | Local File | Scope |
 | :-: | :--- | :--- | :--- |
-| **1** | [Stage 1 - Foundations](https://github.com/AVL-Code/SIIBS/milestone/1) | [`01-stage-1-foundations.md`](./milestones/01-stage-1-foundations.md) | Repo conventions, branch protection, CI/CD, PostgreSQL 16 multi-schema, IAM, append-only Audit, backup/restore scripts |
-| **2** | [Stage 2 - Registry Core](https://github.com/AVL-Code/SIIBS/milestone/2) | [`02-stage-2-registry-core.md`](./milestones/02-stage-2-registry-core.md) | Shared `Person` (`UUIDv7`), `PersonContact`, `PersonDocument` with protected storage, search & record reuse |
+| **1** | [Stage 1 - Foundations](https://github.com/AVL-Code/SIIBS/milestone/1) | [`01-stage-1-foundations.md`](./milestones/01-stage-1-foundations.md) | Repo conventions, multi-agent worktree setup, branch protection, CI/CD, PostgreSQL 16 multi-schema, `AES-256-GCM`/`HMAC` crypto utilities, IAM, append-only Audit, encrypted backup/restore scripts |
+| **2** | [Stage 2 - Registry Core](https://github.com/AVL-Code/SIIBS/milestone/2) | [`02-stage-2-registry-core.md`](./milestones/02-stage-2-registry-core.md) | Shared `Person` (`UUIDv7`, optional photo, encrypted CPF + blind index), `PersonContact`, `PersonDocument` with encrypted local storage, search & record reuse |
 | **3** | [Stage 3 - Assistance MVP](https://github.com/AVL-Code/SIIBS/milestone/3) | [`03-stage-3-assistance-mvp.md`](./milestones/03-stage-3-assistance-mvp.md) | `Household`, single active `HEAD` rule, socioeconomic/incomes, benefits, social attendances, baskets, projects, reports |
 | **4** | [Stage 4 - Quality & Operations](https://github.com/AVL-Code/SIIBS/milestone/4) | [`04-stage-4-quality-operations.md`](./milestones/04-stage-4-quality-operations.md) | Domain integrity, RBAC/privacy isolation & audit tests, verified real backup restoration test, operations runbook |
 
@@ -18,12 +18,12 @@ This backlog follows the **Backlog.md** convention and is synchronized 1:1 with 
 ### Stage 1 — Foundations
 | ID | GitHub Issue | Title | Labels | Dependencies | Status |
 | :--- | :---: | :--- | :--- | :--- | :---: |
-| [`task-01`](./tasks/task-01-repo-structure-and-tooling.md) | [#1](https://github.com/AVL-Code/SIIBS/issues/1) | [Chore] Configure repository structure, TypeScript strict tooling, and Git hooks | `module:shared`, `type:chore` | — | `todo` |
-| [`task-02`](./tasks/task-02-branch-security-and-repo-protection.md) | [#2](https://github.com/AVL-Code/SIIBS/issues/2) | [Chore] Configure GitHub branch protection rules and repository security settings | `module:shared`, `type:chore` | `#1` | `todo` |
-| [`task-03`](./tasks/task-03-ci-cd-github-actions.md) | [#3](https://github.com/AVL-Code/SIIBS/issues/3) | [Chore] Set up CI/CD pipeline with GitHub Actions | `module:shared`, `type:chore` | `#1` | `todo` |
-| [`task-04`](./tasks/task-04-postgres-multischema-and-env.md) | [#4](https://github.com/AVL-Code/SIIBS/issues/4) | [Chore] Set up local PostgreSQL 16 environment, multi-schema configuration, and Zod env validation | `module:shared`, `type:chore` | `#1` | `todo` |
-| [`task-05`](./tasks/task-05-spec-rbac-roles-and-permissions.md) | [#5](https://github.com/AVL-Code/SIIBS/issues/5) | [Spec] Define initial RBAC roles, permissions matrix, and security policies | `module:iam`, `type:spec`, `spec:open-question` | — | `todo` |
-| [`task-06`](./tasks/task-06-iam-authentication-and-rbac.md) | [#6](https://github.com/AVL-Code/SIIBS/issues/6) | [Feat] Implement IAM module: authentication, session management, and backend PermissionGuard | `module:iam`, `type:feat` | `#4`, `#5` | `todo` |
+| [`task-01`](./tasks/task-01-repo-structure-and-tooling.md) | [#1](https://github.com/AVL-Code/SIIBS/issues/1) | [Chore] Configure repository structure, TypeScript strict tooling, and Git hooks | `module:shared`, `type:chore` | — | `done` |
+| [`task-02`](./tasks/task-02-branch-security-and-repo-protection.md) | [#2](https://github.com/AVL-Code/SIIBS/issues/2) | [Chore] Configure GitHub branch protection rules and repository security settings | `module:shared`, `type:chore` | `#1` | `done` |
+| [`task-03`](./tasks/task-03-ci-cd-github-actions.md) | [#3](https://github.com/AVL-Code/SIIBS/issues/3) | [Chore] Set up CI/CD pipeline with GitHub Actions | `module:shared`, `type:chore` | `#1` | `done` |
+| [`task-04`](./tasks/task-04-postgres-multischema-and-env.md) | [#4](https://github.com/AVL-Code/SIIBS/issues/4) | [Chore] Set up local PostgreSQL 16 environment, multi-schema configuration, and Zod env validation | `module:shared`, `type:chore` | `#1` | `done` |
+| [`task-05`](./tasks/task-05-spec-rbac-roles-and-permissions.md) | [#5](https://github.com/AVL-Code/SIIBS/issues/5) | [Spec] Define initial RBAC roles, permissions matrix, and security policies | `module:iam`, `type:spec`, `spec:open-question` | — | `done` |
+| [`task-06`](./tasks/task-06-iam-authentication-and-rbac.md) | [#6](https://github.com/AVL-Code/SIIBS/issues/6) | [Feat] Implement IAM module: authentication, session management, and backend PermissionGuard | `module:iam`, `type:feat` | `#4`, `#5` | `done` |
 | [`task-07`](./tasks/task-07-transversal-audit-module.md) | [#7](https://github.com/AVL-Code/SIIBS/issues/7) | [Feat] Implement transversal append-only Audit module and transactional logging helper | `module:audit`, `type:feat` | `#4`, `#6` | `todo` |
 | [`task-08`](./tasks/task-08-backup-and-restore-scripts.md) | [#8](https://github.com/AVL-Code/SIIBS/issues/8) | [Chore] Implement automated PostgreSQL + document storage backup and restore scripts | `module:shared`, `type:chore` | `#4` | `todo` |
 

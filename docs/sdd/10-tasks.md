@@ -3,19 +3,19 @@
 > **Rastreabilidade:** Todas as tarefas abaixo estão detalhadas em [`docs/backlog/`](../backlog/README.md) e sincronizadas com as **Issues `#1` a `#24`** e **Milestones `1` a `4`** no GitHub (`AVL-Code/SIIBS`).
 
 ## Etapa 1 — Fundamentos (`Stage 1 - Foundations`)
-- [ ] Confirmar stack e ambiente local ([#1](https://github.com/AVL-Code/SIIBS/issues/1), [#4](https://github.com/AVL-Code/SIIBS/issues/4)).
+- [ ] Confirmar stack, ambiente local e convenções de desenvolvimento multiagêntico via Git Worktrees ([#1](https://github.com/AVL-Code/SIIBS/issues/1), [#4](https://github.com/AVL-Code/SIIBS/issues/4)).
 - [ ] Configurar repositório, ambientes, CI/CD, segurança das branches e convenções ([#1](https://github.com/AVL-Code/SIIBS/issues/1), [#2](https://github.com/AVL-Code/SIIBS/issues/2), [#3](https://github.com/AVL-Code/SIIBS/issues/3)).
-- [ ] Definir esquema e migrações ([#4](https://github.com/AVL-Code/SIIBS/issues/4)).
+- [ ] Definir esquema, migrações e utilitários criptográficos (`AES-256-GCM` + *blind index* `HMAC-SHA256`) ([#4](https://github.com/AVL-Code/SIIBS/issues/4)).
 - [ ] Implementar autenticação e autorização ([#5](https://github.com/AVL-Code/SIIBS/issues/5), [#6](https://github.com/AVL-Code/SIIBS/issues/6)).
 - [ ] Implementar auditoria transversal ([#7](https://github.com/AVL-Code/SIIBS/issues/7)).
-- [ ] Documentar e automatizar backup/restauração ([#8](https://github.com/AVL-Code/SIIBS/issues/8)).
+- [ ] Documentar e automatizar backup/restauração criptografados (`AES-256` com `BACKUP_ENCRYPTION_KEY`) ([#8](https://github.com/AVL-Code/SIIBS/issues/8)).
 
 ## Etapa 2 — Núcleo Pessoas (`Stage 2 - Registry Core`)
-- [ ] Definir campos básicos, regras de CPF/documentos e validação de duplicidades ([#9](https://github.com/AVL-Code/SIIBS/issues/9)).
-- [ ] Implementar Pessoa com identificador interno (`UUIDv7`) e contatos ([#10](https://github.com/AVL-Code/SIIBS/issues/10)).
-- [ ] Implementar documentos gerais vinculados à Pessoa e armazenamento local protegido ([#11](https://github.com/AVL-Code/SIIBS/issues/11)).
-- [ ] Implementar busca, detecção de similaridade e reaproveitamento ([#12](https://github.com/AVL-Code/SIIBS/issues/12)).
-- [ ] Auditar alterações em dados/documentos ([#10](https://github.com/AVL-Code/SIIBS/issues/10), [#11](https://github.com/AVL-Code/SIIBS/issues/11)).
+- [ ] Definir campos básicos (incluindo foto de identificação opcional), regras de CPF/documentos com *blind index* e validação de duplicidades ([#9](https://github.com/AVL-Code/SIIBS/issues/9)).
+- [ ] Implementar Pessoa com identificador interno (`UUIDv7`), foto opcional (`./storage/photos/`), criptografia de CPF e contatos ([#10](https://github.com/AVL-Code/SIIBS/issues/10)).
+- [ ] Implementar documentos gerais vinculados à Pessoa e armazenamento local protegido e criptografado (`./storage/documents/`) ([#11](https://github.com/AVL-Code/SIIBS/issues/11)).
+- [ ] Implementar busca (por nome/data ou *blind index* de documento), detecção de similaridade e reaproveitamento com identificação visual por foto ([#12](https://github.com/AVL-Code/SIIBS/issues/12)).
+- [ ] Auditar alterações em dados, foto e documentos ([#10](https://github.com/AVL-Code/SIIBS/issues/10), [#11](https://github.com/AVL-Code/SIIBS/issues/11)).
 
 ## Etapa 3 — Social (`Stage 3 - Assistance MVP`)
 - [ ] Especificar regras de histórico familiar, transição de responsável, benefícios e atendimentos ([#13](https://github.com/AVL-Code/SIIBS/issues/13)).

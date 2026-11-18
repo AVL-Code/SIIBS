@@ -3,7 +3,7 @@
 ## Escopo atual: Assistência Social
 
 ### Requisitos funcionais
-- **RF-01 — Cadastro de pessoas:** criar, consultar e atualizar dados cadastrais básicos.
+- **RF-01 — Cadastro de pessoas:** criar, consultar e atualizar dados cadastrais básicos, incluindo foto de identificação opcional compartilhada no núcleo de Pessoa (`DA-015`).
 - **RF-02 — Documentos pessoais:** registrar documentos associados à pessoa, inicialmente RG e comprovante de endereço; a lista será refinada.
 - **RF-03 — Busca e reaproveitamento:** localizar pessoa existente e reutilizar os dados, evitando duplicidade.
 - **RF-04 — Entidade familiar:** cadastrar entidade familiar com um responsável e demais integrantes.
@@ -30,13 +30,13 @@
 - **RF-C08:** contatos de emergência associados ao aluno/matrícula, sem presumir vínculo social ou matrícula própria.
 
 ## Requisitos não funcionais
-- **RNF-01 — Segurança:** autenticação individual, autorização no backend e proteção de credenciais/sessões.
+- **RNF-01 — Segurança e Criptografia:** autenticação individual, autorização no backend, proteção de credenciais/sessões e criptografia em camadas (disco/volume do SO, criptografia `AES-256-GCM` com *blind index* `HMAC-SHA256` para colunas e arquivos sensíveis, e backups criptografados com gestão de chaves segregada conforme `DA-013`).
 - **RNF-02 — Privacidade:** limitar exposição de dados pessoais e sensíveis conforme finalidade e permissão.
 - **RNF-03 — Auditoria:** alterações relevantes rastreáveis.
 - **RNF-04 — Integridade:** evitar duplicação de dados comuns e manter consistência.
 - **RNF-05 — Infraestrutura:** banco local e baixo consumo, conforme ambiente disponível.
-- **RNF-06 — Backup:** procedimento documentado e testável de backup/restauração.
-- **RNF-07 — Manutenibilidade:** separar responsabilidades por domínio, com documentação e testes.
+- **RNF-06 — Backup:** procedimento documentado, criptografado e testável de backup/restauração.
+- **RNF-07 — Manutenibilidade e Desenvolvimento Multiagêntico:** separar responsabilidades por domínio e camadas com contratos explícitos (Zod + `index.ts`), documentação SDD e isolamento por Git Worktrees para viabilizar desenvolvimento paralelo multiagêntico (`DA-014`).
 - **RNF-08 — Evolução:** adicionar Cursos sem misturar suas regras com Social.
 - **RNF-09 — Custo:** priorizar ferramentas gratuitas/open source e evitar dependências pagas obrigatórias.
 - **RNF-10 — Recuperação:** documentar limitações da infraestrutura local e reduzir risco de perda de dados.

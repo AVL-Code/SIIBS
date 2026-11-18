@@ -34,13 +34,18 @@ A escolha prioriza **execução local de baixo custo (`RNF-05`, `RNF-09`)**, **i
     - `TIMESTAMPTZ` para datas/horas consistentes em UTC (`AUDIT.md`).
     - `JSONB` para metadados controlados e diffs da trilha de auditoria (`changed_fields`, `previous_values`, `new_values`).
 - **ORM & Migrations:** Prisma ORM (com `multiSchema`) ou Drizzle ORM, com migrações SQL versionadas no repositório.
-- **File Storage (`PersonDocument`):** Sistema de arquivos local fora da pasta pública (`./storage/documents/`), servido exclusivamente via rota autenticada e autorizada no backend (`SECURITY.md`).
+- **File Storage (`PersonDocument` & `Person` Photo):** Sistema de arquivos local fora da pasta pública (`./storage/documents/` para documentos e `./storage/photos/` para fotos de identificação de `Person`, comprimidas em `WebP`/`JPEG` até 500 KB — `DA-015`), criptografado em repouso (`AES-256-GCM`) e servido exclusivamente via rotas autenticadas e autorizadas no backend (`SECURITY.md`).
 
-### 1.3 Security & Authentication
+### 1.3 Security, Authentication & Layered Encryption (`DA-013`)
 
 - **Authentication:** Sessão baseada em cookie `HttpOnly`, `SameSite=Lax`, assinada/criptografada.
 - **Password Hashing:** `Argon2id` (`SECURITY.md`).
 - **Primary Identifiers (`DA-011`):** `UUIDv7` (identificador interno estável, ordenável temporalmente e otimizado para índices B-Tree no PostgreSQL, nunca utilizando CPF como chave primária).
+- **Layered Encryption & Blind Indexing (`DA-013`):**
+  1. **OS/Volume Encryption:** Disco/volume local protegido via LUKS (Linux) ou BitLocker (Windows).
+  2. **Application-Level Field & File Encryption (`AES-256-GCM`):** Colunas ultrassensíveis — CPF (`cpf_encrypted`), números de documentos sensíveis (`number_encrypted` em `registry.person_documents`) e avaliações/observações sociais (`notes_encrypted` em `assistance.attendances`) — além dos arquivos em `./storage/documents/` e `./storage/photos/` são criptografados na camada de aplicação com `AES-256-GCM` (IV aleatório de 96 bits + Auth Tag de 128 bits) usando `DATA_ENCRYPTION_KEY`.
+  3. **Blind Indexing (`HMAC-SHA256`):** Para permitir busca exata e constraint de unicidade em campos cifrados (`RF-03`) sem descriptografar a tabela inteira, a aplicação calcula um *blind index* determinístico (`HMAC-SHA256` do valor normalizado usando `BLIND_INDEX_KEY`) e persiste em colunas indexadas (`cpf_blind_index`, `number_blind_index`). O nome de `Person` permanece pesquisável para suportar buscas parciais/fonéticas.
+  4. **Key Separation & Backup Encryption:** As chaves `DATA_ENCRYPTION_KEY` e `BLIND_INDEX_KEY` são injetadas via ambiente/cofre do SO no boot e nunca persistidas junto aos backups. Os pacotes de backup são criptografados com `AES-256` utilizando uma chave independente (`BACKUP_ENCRYPTION_KEY`).
 
 ### 1.4 User Interface (UI)
 
@@ -104,13 +109,21 @@ Conforme `06-architecture.md` e `08-api.md`, o repositório principal orquestra 
 
 ```text
 SIIBS/                                # Root Repository (AVL-Code/SIIBS)
+├── AGENTS.md                         # Always-on root multi-agent & Orchestrator rule file
+├── .agents/
+│   ├── skills.json                   # Unified skill discovery across root, backend, and frontend
+│   └── skills/                       # General, cross-cutting, testing & security skills
 ├── docs/
+│   ├── agents/                       # Multi-agent operational playbooks (orchestrator, spec-architect, backend, frontend, qa-security)
 │   ├── sdd/                          # Spec-Driven Development specifications
 │   ├── backlog/                      # Backlog.md tasks & milestones
 │   └── operations/                   # Installation, backup & restore runbooks
 ├── docker-compose.yml                # Local PostgreSQL 16+ & environment orchestration
 │
 ├── backend/                          # Submodule: AVL-Code/SIIBS_Back (NestJS Modular Monolith)
+│   ├── AGENTS.md                     # Always-on Backend NestJS Agent rule file
+│   ├── .agents/
+│   │   └── skills/                   # Backend-specific development skills
 │   ├── src/
 │   │   ├── modules/
 │   │   │   ├── iam/                  # NestJS IamModule | PostgreSQL schema: iam
@@ -131,11 +144,11 @@ SIIBS/                                # Root Repository (AVL-Code/SIIBS)
 │   │   │   │   ├── audit.module.ts   # Exports AuditService
 │   │   │   │   └── index.ts
 │   │   │   │
-│   │   │   ├── registry/             # NestJS RegistryModule | PostgreSQL schema: registry (DA-003, DA-004)
-│   │   │   │   ├── domain/           # Person, PersonDocument, PersonContact
-│   │   │   │   ├── application/      # PersonService, PersonDocumentService
-│   │   │   │   ├── infrastructure/   # Repositories & protected local file storage
-│   │   │   │   ├── presentation/     # PersonsController, PersonDocumentsController (/api/v1/persons)
+│   │   │   ├── registry/             # NestJS RegistryModule | PostgreSQL schema: registry (DA-003, DA-004, DA-015)
+│   │   │   │   ├── domain/           # Person (incl. optional photo metadata), PersonDocument, PersonContact
+│   │   │   │   ├── application/      # PersonService (CRUD, search, photo upload/stream), PersonDocumentService
+│   │   │   │   ├── infrastructure/   # Repositories & encrypted local storage (./storage/photos/, ./storage/documents/)
+│   │   │   │   ├── presentation/     # PersonsController (/api/v1/persons, /:id/photo), PersonDocumentsController
 │   │   │   │   ├── schemas/          # Input/Output DTO Zod schemas
 │   │   │   │   ├── registry.module.ts# Exports PersonService & PersonDocumentService
 │   │   │   │   └── index.ts          # Only allowed entry point for other backend modules
@@ -152,13 +165,16 @@ SIIBS/                                # Root Repository (AVL-Code/SIIBS)
 │   │   │   └── education/            # NestJS EducationModule | PostgreSQL schema: education (Reserved)
 │   │   │       └── README.md         # Architectural placeholder for future expansion
 │   │   │
-│   │   ├── shared/                   # Domain-agnostic utilities (UUIDv7, env validation, base errors)
+│   │   ├── shared/                   # Domain-agnostic utilities (UUIDv7, AES-256-GCM crypto, HMAC blind index, env validation, base errors)
 │   │   ├── db/                       # PostgreSQL client, multi-schema configuration, migrations, seeds
 │   │   ├── app.module.ts
 │   │   └── main.ts
 │   └── scripts/                      # Backup, restore, and verification scripts
 │
 └── frontend/                         # Submodule: AVL-Code/SIIBS_Front (React + Vite + TypeScript)
+    ├── AGENTS.md                     # Always-on Frontend React Agent rule file
+    ├── .agents/
+    │   └── skills/                   # Frontend-specific design & UI/UX skills
     └── src/
         ├── features/
         │   ├── auth/                 # Login & session handling
@@ -228,6 +244,24 @@ Nenhum código é implementado sem vínculo explícito com os requisitos (`02-re
   2. Isolamento de dados sensíveis de `assistance` para usuários sem permissão (`RNF-02`).
   3. Atomicidade entre alteração de dados e gravação de `AuditEvent` em `audit.events` com `source_module`, `actor_user_id` e `changed_fields` (`RF-13`, `DA-008`).
 - **End-to-End Tests (`e2e/*.e2e.ts`):** Validam os fluxos completos descritos em `09-acceptance.md`.
+
+### 5.3 Arquitetura e Orquestração de Desenvolvimento Multiagêntico (`DA-014`)
+
+Para acelerar e escalar o desenvolvimento de todo o sistema (módulos `iam`, `audit`, `registry`, `assistance` e futuramente `education`), o projeto adota um modelo de **desenvolvimento multiagêntico paralelo por papel/camada** coordenado por um **Agente Orquestrador** e isolado via **Git Worktrees** (documentado detalhadamente em [`docs/agents/`](../agents/README.md) e nas regras `AGENTS.md` da raiz, `backend/AGENTS.md` e `frontend/AGENTS.md`):
+
+1. **Papéis de Agentes (`docs/agents/`):**
+   - **Orchestrator Agent ([`docs/agents/orchestrator.md`](../agents/orchestrator.md)):** Único ponto de contato com o usuário e guardião do contexto do projeto. Seleciona dinamicamente o modelo de cada agente/etapa (`flash_lite`, `flash`, `pro`) para economia e eficiência de tokens, valida o *Contract-First Handshake* entre Backend e Frontend e responde dúvidas dos agentes consultando `docs/sdd/` (escalando ao usuário quando a regra não estiver documentada, sem jamais supor regras de negócio).
+   - **Spec & Architecture Agent ([`docs/agents/spec-architect.md`](../agents/spec-architect.md)):** Mantém os documentos em `docs/sdd/`, resolve questões de `OPEN-QUESTIONS.md` em `DECISIONS.md` (após confirmação do usuário via Orquestrador) e define contratos Zod e fronteiras nos arquivos `index.ts` de cada módulo.
+   - **Backend NestJS Agent ([`docs/agents/backend.md`](../agents/backend.md)):** Ativa obrigatoriamente as skills de desenvolvimento em `backend/.agents/skills/` e `.agents/skills/`, negocia o contrato de API com o Frontend e implementa entidades de domínio, serviços, criptografia (`AES-256-GCM` / `HMAC-SHA256`), repositórios PostgreSQL, migrações e controllers REST dentro de `backend/src/modules/<context>/`.
+   - **Frontend React Agent ([`docs/agents/frontend.md`](../agents/frontend.md)):** Ativa obrigatoriamente as skills de design/UI em `frontend/.agents/skills/` e `.agents/skills/`, negocia o contrato de integração (rotas, botões, estados de erro e `data-testid`) com o Backend e implementa interfaces em `pt-BR`, captura de foto (webcam/upload), formulários React Hook Form + Zod e integração TanStack Query dentro de `frontend/src/features/<context>/`.
+   - **QA & Security Agent ([`docs/agents/qa-security.md`](../agents/qa-security.md)):** Ativa as skills gerais e de teste em `.agents/skills/`, escreve e executa testes de aceitação, integração PostgreSQL, isolamento RBAC/privacidade, imutabilidade de auditoria, verificação de criptografia em repouso e ensaios de backup/restauração.
+2. **Descoberta Distribuída de Skills (`.agents/skills.json`):**
+   - O arquivo `.agents/skills.json` na raiz mapeia os três diretórios de skills: `.agents/skills/` (skills gerais e de teste na raiz), `backend/.agents/skills/` (skills focadas em desenvolvimento backend) e `frontend/.agents/skills/` (skills focadas em design e UI/UX).
+3. **Handshake Contract-First (Backend ↔ Frontend antes do código):**
+   - Antes que os agentes de Backend, Frontend e QA codifiquem em paralelo em uma funcionalidade, Backend e Frontend negociam e assinam um **Contrato de Integração da Task** (endpoints REST, DTOs Zod de entrada/saída, permissões RBAC/erros HTTP, botões/ações da tela e atributos `data-testid`), validado pelo Orquestrador.
+4. **Isolamento Físico com Git Worktrees:**
+   - Agentes trabalhando simultaneamente em Issues distintas nunca compartilham a mesma árvore de diretórios em disco. Cada Issue ativa utiliza um worktree dedicado (ex.: `git worktree add ../siibs-wt-issue-10 -b feat/10-registry-person-crud dev` nos submódulos correspondentes).
+   - O paralelismo sem conflitos é garantido pelas regras da Seção 3.2: **No Deep Imports** (comunicação apenas via `index.ts`) e **Write Isolation per Schema** (cada módulo só escreve no seu próprio schema PostgreSQL).
 
 ---
 
@@ -341,12 +375,12 @@ Closes #12
 
 ---
 
-## 7. Operação Local, Backup e Restauração (`RNF-05`, `RNF-06`, `RNF-10`)
+## 7. Operação Local, Backup Criptografado e Restauração (`RNF-05`, `RNF-06`, `RNF-10`, `DA-013`)
 
-- **Environment Configuration:** Variáveis de ambiente centralizadas em `.env` e validadas no boot via Zod (`src/shared/env.ts`), com `.env.example` versionado e sem segredos no Git.
-- **Automated Backup Script (`npm run db:backup`):**
+- **Environment & Key Management Configuration:** Variáveis de ambiente centralizadas em `.env` e validadas no boot via Zod (`src/shared/env.ts`), incluindo `DATABASE_URL`, `SESSION_SECRET`, `STORAGE_DIR`, `BACKUP_TARGET_DIR`, `DATA_ENCRYPTION_KEY` (chave de 256 bits para `AES-256-GCM` de colunas e arquivos), `BLIND_INDEX_KEY` (chave de 256 bits para `HMAC-SHA256`) e `BACKUP_ENCRYPTION_KEY` (chave exclusiva para criptografia de pacotes de backup). O `.env.example` é versionado sem segredos no Git, e as chaves nunca são armazenadas dentro dos pacotes de backup.
+- **Automated Encrypted Backup Script (`npm run db:backup`):**
   1. Executa `pg_dump --format=custom --no-owner --no-acl` gerando um dump transacionalmente consistente de todos os schemas (`iam`, `audit`, `registry`, `assistance`) do PostgreSQL.
-  2. Empacota o dump junto com o diretório protegido `./storage/documents/` em um arquivo datado.
-  3. Gera manifesto com checksum `SHA-256` e copia o pacote para o diretório externo configurado (`BACKUP_TARGET_DIR`).
+  2. Empacota o dump junto com os diretórios protegidos `./storage/documents/` e `./storage/photos/` em um arquivo datado.
+  3. Criptografa o pacote completo com `AES-256` utilizando `BACKUP_ENCRYPTION_KEY`, gera manifesto com checksum `SHA-256` e copia o pacote cifrado para o diretório externo configurado (`BACKUP_TARGET_DIR`).
 - **Automated Restore & Verification (`npm run db:restore` / `npm run db:verify-backup`):**
-  - Restaura o dump via `pg_restore` em um banco PostgreSQL temporário de verificação (`sdd_verify_restore`), executa checagens de contagem e integridade referencial, e registra a evidência do teste de restauração exigida nos critérios de aceite (`09-acceptance.md`).
+  - Valida o checksum `SHA-256`, descriptografa o pacote com `BACKUP_ENCRYPTION_KEY`, restaura o dump via `pg_restore` em um banco PostgreSQL temporário de verificação (`sdd_verify_restore`), executa checagens de contagem, integridade referencial e integridade dos arquivos (`./storage/documents/` e `./storage/photos/`), e registra a evidência do teste de restauração exigida nos critérios de aceite (`09-acceptance.md`).

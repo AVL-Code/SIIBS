@@ -1,7 +1,7 @@
 # 03 — Modelo de domínio
 
 ## Pessoa
-Representa uma pessoa física e contém dados cadastrais compartilháveis, como nome, data de nascimento, contatos e documentos comuns. É a identidade central para evitar cadastros duplicados entre módulos.
+Representa uma pessoa física e contém dados cadastrais compartilháveis, como nome, data de nascimento, foto de identificação opcional (capturada via webcam ou upload), contatos e documentos comuns. É a identidade central para evitar cadastros duplicados e apoiar a identificação visual contra homônimos entre módulos (`DA-003`, `DA-015`).
 
 Os documentos gerais pertencem ao cadastro da pessoa quando forem reutilizáveis. A lista inicial inclui RG e comprovante de endereço, mas tipos, metadados, validade e regras serão refinados. Não presumir unicidade global para todos os tipos de documento.
 
