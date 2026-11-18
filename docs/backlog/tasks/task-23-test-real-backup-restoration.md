@@ -21,12 +21,12 @@ dependencies:
 - **Work Plan:** `docs/sdd/10-tasks.md` (Etapa 4 — Teste real de restauração)
 
 ## Description
-Execute a full backup and restoration rehearsal containing realistic seeded data across all schemas (`iam`, `audit`, `registry`, `assistance`) and attached files in `./storage/documents/`, restoring into a clean PostgreSQL instance and recording formal verification evidence.
+Execute a full encrypted backup and restoration rehearsal containing realistic seeded data across all schemas (`iam`, `audit`, `registry`, `assistance`) and attached encrypted files in `./storage/documents/` and `./storage/photos/`, restoring into a clean PostgreSQL instance using `BACKUP_ENCRYPTION_KEY` and recording formal verification evidence (`DA-013`, `DA-015`).
 
 ## Acceptance Criteria
-- [ ] Populate a staging/local environment with representative records across `iam`, `registry` (including digital files in `./storage/documents/`), `assistance`, and `audit`.
-- [ ] Run `npm run db:backup` to generate the backup package and `SHA-256` manifest.
-- [ ] Run `npm run db:verify-backup` / `npm run db:restore` into a clean target environment and verify identical row counts, foreign key integrity, audit trail continuity, and document file checksums.
+- [ ] Populate a staging/local environment with representative records across `iam`, `registry` (including encrypted digital files in `./storage/documents/` and identification photos in `./storage/photos/`), `assistance`, and `audit`.
+- [ ] Run `npm run db:backup` to generate the `AES-256` encrypted backup package and `SHA-256` manifest.
+- [ ] Run `npm run db:verify-backup` / `npm run db:restore` into a clean target environment and verify identical row counts, foreign key integrity, application-level field decryption (`AES-256-GCM`), audit trail continuity, and document/photo file checksums.
 - [ ] Record the formal restoration test report (date, commands executed, duration, checksums, verification outcome) in `docs/operations/restore-verification-report.md`.
 
 ## Definition of Done

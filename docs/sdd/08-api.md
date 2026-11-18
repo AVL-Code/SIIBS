@@ -6,9 +6,9 @@ A comunicação divide-se em dois níveis claros:
 2. **Entre Módulos de Domínio dentro do Backend (`SIIBS_Back`):** chamadas internas em memória via injeção de dependência de serviços exportados pelos módulos do NestJS (`RegistryModule`, `AssistanceModule`, `AuditModule`, `IamModule`). Não criar microserviços separados nem chamadas HTTP entre módulos de domínio no MVP.
 
 ## Contratos lógicos iniciais
-- `PessoaService`: buscar, criar, consultar dados básicos e atualizar Pessoa.
-- `DocumentoPessoaService`: listar e manter documentos gerais conforme permissões.
-- `SocialService`: criar entidade familiar, associar membro, registrar atendimento e consultar histórico.
+- `PessoaService`: buscar (por nome/data ou por documento via *blind index*), criar, consultar dados básicos, atualizar Pessoa e gerenciar foto de identificação opcional (`uploadPhoto`, `getPhotoStream`, `removePhoto` — `DA-015`).
+- `DocumentoPessoaService`: listar e manter documentos gerais conforme permissões, garantindo criptografia em repouso (`DA-013`).
+- `SocialService`: criar entidade familiar, associar membro, registrar atendimento (com criptografia de avaliações/observações sociais) e consultar histórico.
 - `AuditService`: registrar operações e alterações relevantes.
 
 Os nomes são ilustrativos, sem obrigação de linguagem ou framework.

@@ -26,9 +26,9 @@ Configure the local PostgreSQL 16+ database environment, boot-time environment v
 ## Acceptance Criteria
 
 - [x] Create `docker-compose.yml` providing PostgreSQL 16+ for local development and isolated test database execution.
-- [x] Create `.env.example` and `src/shared/env.ts` using Zod to validate required environment variables at startup (`DATABASE_URL`, `SESSION_SECRET`, `STORAGE_DIR`, `BACKUP_TARGET_DIR`).
+- [x] Create `.env.example` and `src/shared/env.ts` using Zod to validate required environment variables at startup (`DATABASE_URL`, `SESSION_SECRET`, `STORAGE_DIR`, `BACKUP_TARGET_DIR`, `DATA_ENCRYPTION_KEY`, `BLIND_INDEX_KEY`, `BACKUP_ENCRYPTION_KEY`).
 - [x] Configure ORM (Prisma with `multiSchema` or Drizzle) and initial migration creating PostgreSQL schemas: `iam`, `audit`, `registry`, `assistance`, and `education`.
-- [x] Implement `UUIDv7` generator helper in `src/shared/` (`DA-011`) and standardized domain error classes (`NotFoundError`, `ForbiddenError`, `UnauthorizedError`, `ValidationError`, `ConflictError`).
+- [x] Implement `UUIDv7` generator helper in `src/shared/` (`DA-011`), `AES-256-GCM` field/file encryption & `HMAC-SHA256` blind index utilities in `src/shared/crypto/` (`DA-013`), and standardized domain error classes (`NotFoundError`, `ForbiddenError`, `UnauthorizedError`, `ValidationError`, `ConflictError`).
 
 ## Definition of Done
 

@@ -14,19 +14,19 @@ dependencies:
 ---
 
 ## Context & SDD References
-- **Requirements:** `RF-03`, `RF-06`, `RF-15`, `RNF-02`, `RNF-04` (`docs/sdd/02-requirements.md`)
-- **Decisions:** `DA-003`, `DA-011` (`docs/sdd/DECISIONS.md`)
+- **Requirements:** `RF-03`, `RF-06`, `RF-15`, `RNF-01`, `RNF-02`, `RNF-04` (`docs/sdd/02-requirements.md`)
+- **Decisions:** `DA-003`, `DA-011`, `DA-013`, `DA-015` (`docs/sdd/DECISIONS.md`)
 - **UX Guidelines:** `docs/sdd/05-ux.md`
 - **Acceptance Criteria:** `docs/sdd/09-acceptance.md#pessoas-e-documentos`
 - **Work Plan:** `docs/sdd/10-tasks.md` (Etapa 2 — Implementar busca e reaproveitamento; Definir validação e possíveis duplicidades)
 
 ## Description
-Implement person search by name, birth date, and document numbers, duplicate/similarity warnings during registration, and the UX workflow to reuse an existing `Person` record when starting a Social registration without duplicating basic data.
+Implement person search by name, birth date, and document numbers (via `HMAC-SHA256` blind index), duplicate/similarity warnings during registration, and the UX workflow to reuse an existing `Person` record (displaying their identification photo when available) when starting a Social registration without duplicating basic data.
 
 ## Acceptance Criteria
-- [ ] Implement `PersonService.search` supporting normalized name/phonetic matching, birth date, and document number lookup.
-- [ ] Implement pre-registration duplicate detection warning when an operator enters a person with matching document or high name + birth date similarity.
-- [ ] Implement reuse workflow in the UI (`05-ux.md`): when an existing `Person` is found, display authorized basic data and allow continuing into Social registration reusing the canonical `person_id`.
+- [ ] Implement `PersonService.search` supporting normalized name/phonetic matching, birth date, and exact document number lookup via `HMAC-SHA256` blind index (`cpf_blind_index`, `number_blind_index` — `DA-013`).
+- [ ] Implement pre-registration duplicate detection warning when an operator enters a person with matching document blind index or high name + birth date similarity.
+- [ ] Implement reuse workflow in the UI (`05-ux.md`): when an existing `Person` is found, display authorized basic data (including identification photo avatar when present — `DA-015`) and allow continuing into Social registration reusing the canonical `person_id`.
 - [ ] Include permission-aware household link indicator (`RF-06`): inform authorized Social users if the searched person is already linked to an active `Household`.
 - [ ] Ensure responses strictly use explicit DTOs that never leak sensitive `assistance` data to users lacking Social permissions (`RNF-02`).
 - [ ] Write integration tests validating search accuracy, duplicate prevention, and record reuse.

@@ -1,7 +1,7 @@
 # SDD — Plataforma de Gestão Social e Cursos
 
-**Versão:** 0.3  
-**Status:** documentação inicial para orientar a implementação do módulo Social.
+**Versão:** 0.4  
+**Status:** documentação inicial para orientar a implementação do módulo Social (atualizada com decisões de criptografia em camadas, desenvolvimento multiagêntico e foto de identificação em Pessoa).
 
 ## Visão geral
 A plataforma será desenvolvida por etapas. A primeira entrega contempla o módulo de Assistência Social. Futuramente, poderá incorporar gestão de cursos, alunos, matrículas, turmas, professores, frequência, relatórios de aula, lista de espera e portal de responsáveis.

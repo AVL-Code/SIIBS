@@ -1,0 +1,13 @@
+{
+  "entries": [
+    {
+      "path": ".agents/skills"
+    },
+    {
+      "path": "backend/.agents/skills"
+    },
+    {
+      "path": "frontend/.agents/skills"
+    }
+  ]
+}

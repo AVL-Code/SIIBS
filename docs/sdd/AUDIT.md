@@ -5,7 +5,7 @@ Rastrear operações relevantes, apoiar investigação de erros e preservar resp
 
 ## Eventos mínimos
 - criação, atualização, inativação e associação de registros;
-- alteração de dados gerais de Pessoa;
+- alteração de dados gerais de Pessoa (incluindo inclusão, substituição ou remoção da foto de identificação — `DA-015`);
 - inclusão, substituição ou alteração de documentos;
 - mudança de responsável ou composição familiar;
 - registros/alterações em atendimentos, benefícios e projetos;
@@ -27,8 +27,8 @@ Rastrear operações relevantes, apoiar investigação de erros e preservar resp
 ## Proteção
 - Usuários comuns não podem editar/apagar eventos de auditoria.
 - Limitar acesso a perfis autorizados.
-- Não registrar segredos nem conteúdo sensível desnecessário.
-- Definir retenção e backup.
+- Não registrar segredos, chaves criptográficas (`DATA_ENCRYPTION_KEY`, `BLIND_INDEX_KEY`, `BACKUP_ENCRYPTION_KEY`) nem conteúdo ultrassensível em texto claro desnecessário nos diffs (`previous_values` / `new_values` devem mascarar ou referenciar hash/metadados para campos cifrados conforme `DA-013`).
+- Definir retenção e backup criptografado.
 - Considerar trilha append-only ou controles equivalentes.
 
 ## Alterações de Pessoa
