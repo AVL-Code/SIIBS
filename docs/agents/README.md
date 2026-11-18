@@ -14,6 +14,8 @@ This directory defines the operational architecture, prompts, handoff protocols,
 | **4. Frontend React Agent** | [`frontend.md`](./frontend.md) | `frontend/` (`SIIBS_Front`) | React + Vite + TypeScript SPA, Tailwind + shadcn/ui, `pt-BR` operator UX, webcam/upload photo capture, search & record reuse flow, permission-aware UI. |
 | **5. QA & Security Agent** | [`qa-security.md`](./qa-security.md) | `backend/`, `frontend/`, `docs/operations/` | Unit, PostgreSQL integration, and Playwright E2E tests, RBAC/privacy isolation tests, encryption-at-rest verification, append-only audit tests, real backup restoration verification. |
 
+> **Operational Delegation & PR Merge Policy:** Basic operational tasks (git `branch`/`commit`/`push`, PR creation, CI checks, and routine file edits) are always delegated by the Orchestrator to lighter models (`flash_lite` / `flash`), and final PR merges are performed exclusively by the **User** after QA sign-off.
+
 ---
 
 ## 2. End-to-End Multi-Agent Workflow

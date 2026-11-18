@@ -262,6 +262,8 @@ Para acelerar e escalar o desenvolvimento de todo o sistema (módulos `iam`, `au
 4. **Isolamento Físico com Git Worktrees:**
    - Agentes trabalhando simultaneamente em Issues distintas nunca compartilham a mesma árvore de diretórios em disco. Cada Issue ativa utiliza um worktree dedicado (ex.: `git worktree add ../siibs-wt-issue-10 -b feat/10-registry-person-crud dev` nos submódulos correspondentes).
    - O paralelismo sem conflitos é garantido pelas regras da Seção 3.2: **No Deep Imports** (comunicação apenas via `index.ts`) e **Write Isolation per Schema** (cada módulo só escreve no seu próprio schema PostgreSQL).
+5. **Delegação Operacional e Posse Exclusiva de Merge de PR:**
+   - Tarefas operacionais básicas (como `git commit`/`push`, abertura de Pull Requests, verificação de CI e edições rotineiras) são sempre delegadas pelo Orquestrador a subagentes de modelos mais leves (`flash_lite`/`flash`), sendo os merges finais de PR realizados exclusivamente pelo **Usuário** após a aprovação do QA.
 
 ---
 
